@@ -483,4 +483,56 @@ body {
     padding: 6px 4px;
     border-bottom: 1px solid var(--border-subtle);
   }
+
+  .responsive-grid-split {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+  }
 }
+
+/* ==========================================================================
+   MULTI-THEME PRESETS (v2.0)
+   ========================================================================== */
+
+/* 1. Synthwave Neon */
+.theme-synthwave {
+  --accent-green: #ec4899;
+  --accent-neon: #f43f5e;
+  --accent-emerald: #db2777;
+  --accent-cyan: #06b6d4;
+  --border-color: rgba(236, 72, 153, 0.35);
+  --border-glow: rgba(236, 72, 153, 0.5);
+  --border-active: #f43f5e;
+  --bg-dark-obsidian: #0f0717;
+  --bg-card: #180d26;
+  --bg-elevated: #241438;
+}
+
+/* 2. Hacker Matrix */
+.theme-matrix {
+  --accent-green: #00ff66;
+  --accent-neon: #33ff77;
+  --accent-emerald: #00cc55;
+  --accent-cyan: #00ffaa;
+  --border-color: rgba(0, 255, 102, 0.35);
+  --border-glow: rgba(0, 255, 102, 0.5);
+  --border-active: #00ff66;
+  --bg-dark-obsidian: #010a03;
+  --bg-card: #031407;
+  --bg-elevated: #06200c;
+}
+
+/* 3. Nordic Arctic */
+.theme-nord {
+  --accent-green: #38bdf8;
+  --accent-neon: #7dd3fc;
+  --accent-emerald: #0284c7;
+  --accent-cyan: #818cf8;
+  --border-color: rgba(56, 189, 248, 0.3);
+  --border-glow: rgba(56, 189, 248, 0.5);
+  --border-active: #38bdf8;
+  --bg-dark-obsidian: #0b1120;
+  --bg-card: #0f172a;
+  --bg-elevated: #1e293b;
+}
+

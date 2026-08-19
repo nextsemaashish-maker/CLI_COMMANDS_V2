@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, Terminal, Cpu, FileText, Award } from 'lucide-react';
+import { Layers, Terminal, Cpu, FileText, Award, Box, Zap } from 'lucide-react';
 import { playKeyClickSound } from '../utils/audioSynth';
 
 export default function MobileBottomNav({
@@ -11,8 +11,9 @@ export default function MobileBottomNav({
     { id: 'lessons', label: 'Lessons', icon: Layers, color: '#10b981' },
     { id: 'terminal', label: 'Terminal', icon: Terminal, color: '#06b6d4' },
     { id: 'labs', label: 'Labs', icon: Cpu, color: '#a855f7' },
-    { id: 'cheatsheet', label: 'Cheats', icon: FileText, color: '#f97316' },
-    { id: 'profile', label: 'Profile', icon: Award, color: '#f59e0b' }
+    { id: 'visuals', label: 'Sandboxes', icon: Box, color: '#ec4899' },
+    { id: 'speed', label: 'Speed', icon: Zap, color: '#f59e0b' },
+    { id: 'profile', label: 'Profile', icon: Award, color: '#00ff88' }
   ];
 
   const handleTabClick = (tabId) => {
@@ -32,8 +33,8 @@ export default function MobileBottomNav({
         background: 'rgba(5, 8, 14, 0.96)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderTop: '1px solid rgba(16, 185, 129, 0.3)',
-        padding: '6px 12px calc(6px + env(safe-area-inset-bottom, 0px)) 12px',
+        borderTop: '1px solid var(--border-color)',
+        padding: '6px 8px calc(6px + env(safe-area-inset-bottom, 0px)) 8px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-around',
@@ -55,11 +56,11 @@ export default function MobileBottomNav({
               alignItems: 'center',
               justifyContent: 'center',
               gap: '3px',
-              padding: '6px 4px',
+              padding: '5px 2px',
               background: isActive ? 'rgba(16, 185, 129, 0.14)' : 'transparent',
               border: 'none',
-              borderRadius: '10px',
-              color: isActive ? '#00ff88' : '#94a3b8',
+              borderRadius: '8px',
+              color: isActive ? 'var(--accent-neon)' : '#94a3b8',
               cursor: 'pointer',
               transition: 'all 0.15s ease',
               position: 'relative'
@@ -71,11 +72,11 @@ export default function MobileBottomNav({
                 style={{
                   position: 'absolute',
                   top: '0',
-                  width: '18px',
+                  width: '16px',
                   height: '2px',
-                  background: '#00ff88',
+                  background: 'var(--accent-neon)',
                   borderRadius: '2px',
-                  boxShadow: '0 0 8px #00ff88'
+                  boxShadow: '0 0 8px var(--accent-neon)'
                 }}
               />
             )}
@@ -90,15 +91,15 @@ export default function MobileBottomNav({
               }}
             >
               <IconComponent
-                size={19}
-                color={isActive ? '#00ff88' : tab.color}
+                size={18}
+                color={isActive ? 'var(--accent-neon)' : tab.color}
                 strokeWidth={isActive ? 2.4 : 1.8}
               />
             </div>
 
             <span
               style={{
-                fontSize: '0.68rem',
+                fontSize: '0.65rem',
                 fontFamily: 'var(--font-mono)',
                 fontWeight: isActive ? 700 : 500,
                 letterSpacing: '-0.2px',

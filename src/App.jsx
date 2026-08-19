@@ -4,21 +4,35 @@ import Sidebar from './components/Sidebar';
 import LessonView from './components/LessonView';
 import Terminal from './components/Terminal';
 import PracticeLabsView from './components/PracticeLabsView';
+import VisualPlaygroundView from './components/VisualPlaygroundView';
+import SpeedTypingArenaView from './components/SpeedTypingArenaView';
 import CheatSheetView from './components/CheatSheetView';
 import ProfileProgress from './components/ProfileProgress';
 import QuizModal from './components/QuizModal';
 import CommandSearchModal from './components/CommandSearchModal';
+import AiCommandHelperModal from './components/AiCommandHelperModal';
+import CertificateModal from './components/CertificateModal';
 import CyberBackground from './components/CyberBackground';
 import ErrorBoundary from './components/ErrorBoundary';
 import VisualDiagramModal from './components/VisualDiagramModal';
 import MobileBottomNav from './components/MobileBottomNav';
 
 import { LESSONS_DATA } from './data/lessonsData';
-import { playSuccessBeep } from './utils/audioSynth';
+import { playSuccessBeep, setGlobalSoundPack } from './utils/audioSynth';
+import { Sparkles, Terminal as TermIcon } from 'lucide-react';
 
 export default function App() {
-  // Tabs: 'lessons' | 'terminal' | 'labs' | 'cheatsheet' | 'profile'
+  // Tabs: 'lessons' | 'terminal' | 'labs' | 'visuals' | 'speed' | 'cheatsheet' | 'profile'
   const [activeTab, setActiveTab] = useState('lessons');
+
+  // Multi-Theme & Soundpack state
+  const [activeTheme, setActiveTheme] = useState(() => {
+    return localStorage.getItem('cli_active_theme') || 'theme-cyberpunk';
+  });
+
+  const [soundPack, setSoundPack] = useState(() => {
+    return localStorage.getItem('cli_sound_pack') || 'cyber';
+  });
 
   // Flattened array of all lessons across all modules for seamless Prev/Next navigation
   const allLessons = LESSONS_DATA.flatMap((m) => m.lessons.map((l) => ({ ...l, moduleId: m.id })));
@@ -67,6 +81,8 @@ export default function App() {
 
   // UI Toggles & Drawers
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isAiHelperOpen, setIsAiHelperOpen] = useState(false);
+  const [isCertificateOpen, setIsCertificateOpen] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Desktop pinned sidebar
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false); // Mobile slide-out drawer
@@ -82,7 +98,16 @@ export default function App() {
   // Terminal Drawer State
   const [isTerminalDrawerOpen, setIsTerminalDrawerOpen] = useState(false);
 
-  // Sync to LocalStorage
+  // Sync to LocalStorage & Soundpack
+  useEffect(() => {
+    localStorage.setItem('cli_active_theme', activeTheme);
+  }, [activeTheme]);
+
+  useEffect(() => {
+    localStorage.setItem('cli_sound_pack', soundPack);
+    setGlobalSoundPack(soundPack);
+  }, [soundPack]);
+
   useEffect(() => {
     localStorage.setItem('cli_user_stats', JSON.stringify(userStats));
   }, [userStats]);
@@ -99,12 +124,16 @@ export default function App() {
     localStorage.setItem('cli_bookmarks', JSON.stringify(bookmarks));
   }, [bookmarks]);
 
-  // Keyboard shortcuts (Ctrl + K for search, Ctrl + ~ for terminal drawer, Ctrl + B for sidebar)
+  // Keyboard shortcuts (Ctrl + K for search, Ctrl + ~ for terminal drawer, Ctrl + B for sidebar, Ctrl + I for AI)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         setIsSearchOpen(true);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') {
+        e.preventDefault();
+        setIsAiHelperOpen((prev) => !prev);
       }
       if ((e.ctrlKey || e.metaKey) && e.key === '`') {
         e.preventDefault();
@@ -198,7 +227,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div
-        className={`app-container ${scanlinesEnabled ? 'scanlines' : ''}`}
+        className={`app-container ${activeTheme} ${scanlinesEnabled ? 'scanlines' : ''}`}
         style={{
           backgroundImage: `
             radial-gradient(circle at 50% 0%, ${activeModuleColor}15 0%, transparent 60%)
@@ -215,12 +244,17 @@ export default function App() {
           setActiveTab={setActiveTab}
           userStats={userStats}
           onOpenSearch={() => setIsSearchOpen(true)}
+          onOpenAiHelper={() => setIsAiHelperOpen(true)}
           scanlinesEnabled={scanlinesEnabled}
           setScanlinesEnabled={setScanlinesEnabled}
           bgMatrixEnabled={bgMatrixEnabled}
           setBgMatrixEnabled={setBgMatrixEnabled}
           soundEnabled={soundEnabled}
           setSoundEnabled={setSoundEnabled}
+          activeTheme={activeTheme}
+          setActiveTheme={setActiveTheme}
+          soundPack={soundPack}
+          setSoundPack={setSoundPack}
           onOpenVisuals={() => setIsVisualsOpen(true)}
           isMobileDrawerOpen={isMobileDrawerOpen}
           onToggleMobileDrawer={() => setIsMobileDrawerOpen((prev) => !prev)}
@@ -311,6 +345,21 @@ export default function App() {
             />
           )}
 
+          {activeTab === 'visuals' && (
+            <VisualPlaygroundView
+              soundEnabled={soundEnabled}
+              onTryInTerminal={handleTryInTerminal}
+            />
+          )}
+
+          {activeTab === 'speed' && (
+            <SpeedTypingArenaView
+              soundEnabled={soundEnabled}
+              userStats={userStats}
+              onClaimQuestXp={(xp) => setUserStats((prev) => ({ ...prev, xp: prev.xp + xp }))}
+            />
+          )}
+
           {activeTab === 'cheatsheet' && (
             <CheatSheetView
               bookmarks={bookmarks}
@@ -324,49 +373,84 @@ export default function App() {
               userStats={userStats}
               completedLessons={completedLessons}
               onResetProgress={handleResetProgress}
+              onOpenCertificate={() => setIsCertificateOpen(true)}
+              soundEnabled={soundEnabled}
             />
           )}
         </main>
 
-        {/* Floating Terminal Drawer Button */}
-        <button
-          onClick={() => setIsTerminalDrawerOpen((prev) => !prev)}
+        {/* Floating Quick Action Buttons */}
+        <div
           style={{
             position: 'fixed',
             bottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
             right: '20px',
             zIndex: 1900,
-            background: isTerminalDrawerOpen ? '#10b981' : 'rgba(10, 15, 29, 0.92)',
-            color: isTerminalDrawerOpen ? '#000000' : 'var(--accent-green)',
-            border: '1px solid var(--accent-green)',
-            padding: '7px 14px',
-            borderRadius: 'var(--radius-full)',
-            fontSize: '0.78rem',
-            fontFamily: 'var(--font-mono)',
-            fontWeight: 700,
-            cursor: 'pointer',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.65)',
             display: 'flex',
             alignItems: 'center',
-            gap: '6px',
-            backdropFilter: 'blur(8px)',
-            transition: 'all 0.2s ease'
+            gap: '8px'
           }}
         >
-          <span>⚡ {isTerminalDrawerOpen ? 'Close Terminal' : 'Terminal Drawer'}</span>
-          <kbd
-            className="desktop-only-element"
+          {/* AI Helper Floating Trigger */}
+          <button
+            onClick={() => setIsAiHelperOpen(true)}
             style={{
-              background: 'rgba(255, 255, 255, 0.15)',
-              padding: '1px 4px',
-              borderRadius: '3px',
-              fontSize: '0.62rem',
-              color: isTerminalDrawerOpen ? '#000000' : '#ffffff'
+              background: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)',
+              color: '#000000',
+              border: 'none',
+              padding: '7px 14px',
+              borderRadius: 'var(--radius-full)',
+              fontSize: '0.78rem',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 800,
+              cursor: 'pointer',
+              boxShadow: '0 4px 20px rgba(0, 255, 136, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.2s ease'
             }}
           >
-            Ctrl ~
-          </kbd>
-        </button>
+            <Sparkles size={14} />
+            <span>AI Assistant</span>
+          </button>
+
+          {/* Floating Terminal Drawer Button */}
+          <button
+            onClick={() => setIsTerminalDrawerOpen((prev) => !prev)}
+            style={{
+              background: isTerminalDrawerOpen ? '#10b981' : 'rgba(10, 15, 29, 0.92)',
+              color: isTerminalDrawerOpen ? '#000000' : 'var(--accent-green)',
+              border: '1px solid var(--accent-green)',
+              padding: '7px 14px',
+              borderRadius: 'var(--radius-full)',
+              fontSize: '0.78rem',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.65)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              backdropFilter: 'blur(8px)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <span>⚡ {isTerminalDrawerOpen ? 'Close Terminal' : 'Terminal'}</span>
+            <kbd
+              className="desktop-only-element"
+              style={{
+                background: 'rgba(255, 255, 255, 0.15)',
+                padding: '1px 4px',
+                borderRadius: '3px',
+                fontSize: '0.62rem',
+                color: isTerminalDrawerOpen ? '#000000' : '#ffffff'
+              }}
+            >
+              Ctrl ~
+            </kbd>
+          </button>
+        </div>
 
         {/* Slide-Up Terminal Drawer Overlay */}
         {isTerminalDrawerOpen && (
@@ -451,6 +535,21 @@ export default function App() {
           bookmarks={bookmarks}
           onToggleBookmark={handleToggleBookmark}
           onTryInTerminal={handleTryInTerminal}
+        />
+
+        <AiCommandHelperModal
+          isOpen={isAiHelperOpen}
+          onClose={() => setIsAiHelperOpen(false)}
+          onTryInTerminal={handleTryInTerminal}
+          soundEnabled={soundEnabled}
+        />
+
+        <CertificateModal
+          isOpen={isCertificateOpen}
+          onClose={() => setIsCertificateOpen(false)}
+          userStats={userStats}
+          completedLessonsCount={completedLessons.length}
+          soundEnabled={soundEnabled}
         />
 
         <VisualDiagramModal

@@ -1,4 +1,4 @@
-// Badges and Achievements Data
+// Badges and Achievements Data (NextSem CLI Academy v2.0)
 
 export const BADGES_DATA = [
   {
@@ -34,6 +34,20 @@ export const BADGES_DATA = [
     moduleCompleted: 'docker-containers'
   },
   {
+    id: 'speed-demon',
+    title: 'CLI Speed Demon',
+    description: 'Achieve 50+ WPM in the Speed CLI Typing Arena.',
+    icon: 'Flame',
+    xpRequired: 1300
+  },
+  {
+    id: 'git-architect',
+    title: 'Visual Git Architect',
+    description: 'Explore visual git branch merges and docker sandboxes.',
+    icon: 'GitPullRequest',
+    xpRequired: 1600
+  },
+  {
     id: 'streak-master',
     title: 'Terminal Streak Master',
     description: 'Maintain a 3-day learning streak.',
@@ -46,5 +60,12 @@ export const BADGES_DATA = [
     description: 'Reach 2000 total XP points across all modules.',
     icon: 'Award',
     xpRequired: 2000
+  },
+  {
+    id: 'certified-engineer',
+    title: 'Certified CLI Specialist',
+    description: 'Unlock official verified course certification.',
+    icon: 'CheckCircle2',
+    xpRequired: 1500
   }
 ];

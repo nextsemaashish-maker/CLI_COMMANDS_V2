@@ -1,8 +1,11 @@
 import React from 'react';
-import { Award, Zap, RotateCcw, Terminal, Cpu, GitBranch, Box, Trophy } from 'lucide-react';
+import {
+  Award, Zap, RotateCcw, Terminal, Cpu, GitBranch, Box, Trophy,
+  Flame, GitPullRequest, CheckCircle2, ShieldCheck, Download, Sparkles
+} from 'lucide-react';
 import { BADGES_DATA } from '../data/badgesData';
 import { LESSONS_DATA } from '../data/lessonsData';
-import { playKeyClickSound } from '../utils/audioSynth';
+import { playKeyClickSound, playSuccessBeep } from '../utils/audioSynth';
 
 const iconMap = {
   Terminal,
@@ -10,13 +13,18 @@ const iconMap = {
   GitBranch,
   Box,
   Zap,
-  Award
+  Award,
+  Flame,
+  GitPullRequest,
+  CheckCircle2
 };
 
 export default function ProfileProgress({
   userStats,
   completedLessons,
-  onResetProgress
+  onResetProgress,
+  onOpenCertificate,
+  soundEnabled
 }) {
   const totalLessonsCount = LESSONS_DATA.reduce((acc, curr) => acc + curr.lessons.length, 0);
   const completedCount = completedLessons.length;
@@ -37,6 +45,11 @@ export default function ProfileProgress({
   const handleReset = () => {
     playKeyClickSound();
     onResetProgress();
+  };
+
+  const handleCertificateClick = () => {
+    if (soundEnabled) playSuccessBeep();
+    if (onOpenCertificate) onOpenCertificate();
   };
 
   return (
@@ -164,6 +177,69 @@ export default function ProfileProgress({
         </div>
       </div>
 
+      {/* Official Certificate Claim Banner */}
+      <div
+        style={{
+          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%)',
+          border: '1px solid rgba(0, 255, 136, 0.4)',
+          borderRadius: 'var(--radius-md)',
+          padding: '16px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '12px',
+          boxShadow: '0 4px 20px rgba(0, 255, 136, 0.1)'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '10px',
+              background: '#00ff88',
+              color: '#000000',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 800
+            }}
+          >
+            <Award size={24} />
+          </div>
+          <div>
+            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#ffffff' }}>
+              Official Certificate of Mastery
+            </h3>
+            <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+              Generate, download high-res PNG, or print your verified student credential.
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={handleCertificateClick}
+          style={{
+            padding: '8px 16px',
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            border: 'none',
+            borderRadius: '8px',
+            color: '#000000',
+            fontWeight: 800,
+            fontSize: '0.8rem',
+            fontFamily: 'var(--font-mono)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            boxShadow: '0 4px 15px rgba(0, 255, 136, 0.3)'
+          }}
+        >
+          <Sparkles size={14} /> View & Download Certificate
+        </button>
+      </div>
+
       {/* Stats Cards Grid */}
       <div
         style={{
@@ -237,7 +313,7 @@ export default function ProfileProgress({
               color: '#f59e0b'
             }}
           >
-            {completedCount >= 1 ? 2 : 1} / {BADGES_DATA.length}
+            {BADGES_DATA.filter((b) => userStats.xp >= (b.xpRequired || 0) || completedCount >= (b.requiredLessonsCount || 999)).length} / {BADGES_DATA.length}
           </div>
           <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: '2px' }}>
             Badges Unlocked
