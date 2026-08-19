@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Play, CheckCircle2, Award, Copy, Check, Terminal as TermIcon,
-  Sliders, ChevronLeft, ChevronRight, Download, PanelLeftOpen, Menu
+  Sliders, ChevronLeft, ChevronRight, Download, PanelLeftOpen, Menu, Lightbulb
 } from 'lucide-react';
 import { playSuccessBeep, playKeyClickSound } from '../utils/audioSynth';
 import TerminalExecutionPreview from './TerminalExecutionPreview';
@@ -23,6 +23,8 @@ export default function LessonView({
 }) {
   const [copied, setCopied] = useState(false);
   const [selectedFlags, setSelectedFlags] = useState([]);
+  const [inlineSelectedAnswer, setInlineSelectedAnswer] = useState(null);
+  const [showInlineHint, setShowInlineHint] = useState(false);
 
   if (!lesson) {
     return (
@@ -174,34 +176,42 @@ export default function LessonView({
 
             <span
               style={{
-                fontSize: '0.76rem',
-                color: themeColor,
+                fontSize: '0.68rem',
                 fontFamily: 'var(--font-mono)',
-                fontWeight: 700,
-                letterSpacing: '0.4px'
+                fontWeight: 900,
+                letterSpacing: '0.6px',
+                textTransform: 'uppercase',
+                color: '#04AA6D',
+                background: 'rgba(4, 170, 109, 0.15)',
+                border: '1px solid rgba(4, 170, 109, 0.4)',
+                padding: '3px 10px',
+                borderRadius: '20px'
               }}
             >
               {currentModule?.title?.toUpperCase()}
             </span>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>/</span>
+
             <span
               style={{
-                fontSize: '0.76rem',
-                color: '#ffffff',
+                fontSize: '0.72rem',
                 fontFamily: 'var(--font-mono)',
-                fontWeight: 600
+                color: '#94a3b8',
+                border: '1px solid rgba(51, 65, 85, 0.7)',
+                padding: '3px 10px',
+                borderRadius: '20px'
               }}
             >
-              {lesson.subtopic || 'General'}
+              Lesson #{lesson.id} / 1000
             </span>
+
             <span
               style={{
                 fontSize: '0.68rem',
                 fontFamily: 'var(--font-mono)',
-                background: 'rgba(255, 255, 255, 0.05)',
+                background: 'rgba(255, 255, 255, 0.04)',
                 border: '1px solid var(--border-subtle)',
-                padding: '2px 7px',
-                borderRadius: '4px',
+                padding: '3px 8px',
+                borderRadius: '6px',
                 color: 'var(--text-muted)'
               }}
             >
@@ -211,14 +221,14 @@ export default function LessonView({
 
           <div
             style={{
-              padding: '3px 9px',
-              background: `${themeColor}18`,
-              border: `1px solid ${themeColor}44`,
-              borderRadius: 'var(--radius-xs)',
+              padding: '3px 10px',
+              background: 'rgba(4, 170, 109, 0.15)',
+              border: '1px solid rgba(4, 170, 109, 0.4)',
+              borderRadius: '20px',
               fontSize: '0.74rem',
               fontFamily: 'var(--font-mono)',
-              color: themeColor,
-              fontWeight: 700,
+              color: '#04AA6D',
+              fontWeight: 800,
               whiteSpace: 'nowrap'
             }}
           >
@@ -931,48 +941,152 @@ export default function LessonView({
             paddingTop: '18px'
           }}
         >
-          {lesson.quiz && (
-            <div
-              style={{
-                padding: '14px 18px',
-                background: 'var(--bg-dark-obsidian)',
-                border: '1px solid var(--border-color)',
-                borderRadius: 'var(--radius-md)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '12px'
-              }}
-            >
-              <div>
-                <h4
-                  style={{
-                    color: '#ffffff',
-                    margin: 0,
-                    fontSize: '0.95rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    fontFamily: 'var(--font-display)'
-                  }}
-                >
-                  <Award color={themeColor} size={17} /> Knowledge Challenge Quiz (+{lesson.xp} XP)
-                </h4>
-                <p style={{ color: 'var(--text-muted)', margin: '3px 0 0 0', fontSize: '0.82rem' }}>
-                  Complete 10 questions to test your knowledge on this lesson.
-                </p>
-              </div>
+          {/* Interactive Lesson Check (nextsem.online style) */}
+          {(() => {
+            const quizQuestions = lesson.quiz?.questions || (Array.isArray(lesson.quiz) ? lesson.quiz : []);
+            if (!quizQuestions || quizQuestions.length === 0) return null;
+            const firstQ = quizQuestions[0];
+            const correctOpt = firstQ.correctIndex !== undefined ? firstQ.correctIndex : (firstQ.correct !== undefined ? firstQ.correct : 0);
 
-              <button
-                onClick={onOpenQuiz}
-                className="btn-primary"
-                style={{ padding: '7px 16px', fontSize: '0.8rem' }}
+            return (
+              <div
+                style={{
+                  border: '1px solid rgba(51, 65, 85, 0.7)',
+                  borderRadius: '12px',
+                  padding: '18px 20px',
+                  background: 'rgba(9, 16, 31, 0.5)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  marginBottom: '10px'
+                }}
               >
-                <Play size={13} /> Start Quiz
-              </button>
-            </div>
-          )}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#ffffff' }}>
+                      Interactive Lesson Check
+                    </h4>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.76rem', color: '#94a3b8' }}>
+                      Test your understanding to unlock progress & XP
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button
+                      onClick={() => setShowInlineHint(!showInlineHint)}
+                      style={{
+                        padding: '4px 10px',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(51, 65, 85, 0.7)',
+                        borderRadius: '6px',
+                        color: '#cbd5e1',
+                        fontSize: '0.72rem',
+                        fontFamily: 'var(--font-mono)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <Lightbulb size={12} color="#f59e0b" /> Hint
+                    </button>
+
+                    <button
+                      onClick={onOpenQuiz}
+                      style={{
+                        padding: '4px 12px',
+                        background: 'rgba(4, 170, 109, 0.15)',
+                        border: '1px solid rgba(4, 170, 109, 0.4)',
+                        borderRadius: '6px',
+                        color: '#04AA6D',
+                        fontSize: '0.74rem',
+                        fontFamily: 'var(--font-mono)',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <Award size={13} /> Full Quiz ({quizQuestions.length} Qs)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Hint box if toggled */}
+                {showInlineHint && (
+                  <div style={{ background: 'rgba(245, 158, 11, 0.1)', borderLeft: '3px solid #f59e0b', padding: '8px 12px', borderRadius: '0 6px 6px 0', fontSize: '0.76rem', color: '#fde68a' }}>
+                    💡 {firstQ.explanation || 'Review the command syntax and flags shown in the screenshot above.'}
+                  </div>
+                )}
+
+                {/* Question */}
+                <div style={{ color: '#04AA6D', fontSize: '0.86rem', fontWeight: 700, marginTop: '4px' }}>
+                  Q1: {firstQ.question}
+                </div>
+
+                {/* 2-Column Answer Options Grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '10px' }}>
+                  {firstQ.options.map((opt, optIdx) => {
+                    const isSelected = inlineSelectedAnswer === optIdx;
+                    const isCorrect = optIdx === correctOpt;
+                    const showResult = inlineSelectedAnswer !== null;
+
+                    let borderStyle = '1px solid rgba(51, 65, 85, 0.7)';
+                    let bgStyle = 'rgba(15, 23, 42, 0.4)';
+                    let textColor = '#cbd5e1';
+
+                    if (showResult) {
+                      if (isCorrect) {
+                        borderStyle = '1px solid #04AA6D';
+                        bgStyle = 'rgba(4, 170, 109, 0.18)';
+                        textColor = '#04AA6D';
+                      } else if (isSelected) {
+                        borderStyle = '1px solid #ef4444';
+                        bgStyle = 'rgba(239, 68, 68, 0.18)';
+                        textColor = '#ef4444';
+                      }
+                    }
+
+                    return (
+                      <button
+                        key={optIdx}
+                        onClick={() => {
+                          if (inlineSelectedAnswer === null) {
+                            setInlineSelectedAnswer(optIdx);
+                            if (optIdx === correctOpt) {
+                              playSuccessBeep();
+                              onMarkComplete(lesson.id);
+                            } else {
+                              playKeyClickSound();
+                            }
+                          }
+                        }}
+                        style={{
+                          padding: '10px 14px',
+                          borderRadius: '8px',
+                          border: borderStyle,
+                          background: bgStyle,
+                          color: textColor,
+                          fontSize: '0.78rem',
+                          fontFamily: 'var(--font-mono)',
+                          textAlign: 'left',
+                          cursor: inlineSelectedAnswer === null ? 'pointer' : 'default',
+                          transition: 'all 0.15s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between'
+                        }}
+                      >
+                        <span>{opt}</span>
+                        {showResult && isCorrect && <Check size={14} color="#04AA6D" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Previous / Next Lesson Footer Navigation */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
