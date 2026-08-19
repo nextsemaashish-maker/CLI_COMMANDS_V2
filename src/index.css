@@ -6,10 +6,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap');
 
 :root {
-  /* High-Contrast Neon Accent Tokens */
-  --accent-green: #10b981;
+  /* NextSem Official Emerald & Neon Accent Tokens */
+  --accent-green: #04AA6D;
   --accent-neon: #00ff88;
-  --accent-emerald: #059669;
+  --accent-emerald: #038a58;
   --accent-cyan: #06b6d4;
   --accent-mint: #34d399;
   --accent-lime: #84cc16;
@@ -18,21 +18,21 @@
   --accent-purple: #a855f7;
   --accent-pink: #ec4899;
 
-  /* Premium Obsidian Dark Surfaces */
-  --bg-dark-obsidian: #05080e;
-  --bg-body: #03060a;
-  --bg-card: #0a0f1d;
-  --bg-card-hover: #11182c;
-  --bg-elevated: #162035;
-  --bg-translucent: rgba(10, 15, 29, 0.82);
+  /* NextSem Official Dark Surfaces (#17181c & Slate) */
+  --bg-dark-obsidian: #17181c;
+  --bg-body: #0f1013;
+  --bg-card: #1c1d22;
+  --bg-card-hover: #24262d;
+  --bg-elevated: #2a2d36;
+  --bg-translucent: rgba(23, 24, 28, 0.88);
 
-  /* Border & Glow System */
-  --border-color: rgba(16, 185, 129, 0.22);
+  /* Border & NextSem Glow System */
+  --border-color: rgba(51, 65, 85, 0.45);
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(16, 185, 129, 0.45);
-  --border-active: #00ff88;
-  --accent-green-glow: rgba(16, 185, 129, 0.28);
-  --accent-green-glow-strong: rgba(0, 255, 136, 0.45);
+  --border-glow: rgba(4, 170, 109, 0.45);
+  --border-active: #04AA6D;
+  --accent-green-glow: rgba(4, 170, 109, 0.28);
+  --accent-green-glow-strong: rgba(4, 170, 109, 0.55);
 
   /* Typography */
   --text-primary: #ffffff;
@@ -87,8 +87,8 @@ body {
   overflow-x: hidden;
   position: relative;
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12) 0%, transparent 60%),
-    radial-gradient(circle at 100% 70%, rgba(0, 255, 136, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 50% 0%, rgba(4, 170, 109, 0.14) 0%, transparent 65%),
+    radial-gradient(circle at 100% 70%, rgba(4, 170, 109, 0.04) 0%, transparent 50%),
     radial-gradient(circle at 0% 100%, rgba(6, 182, 212, 0.04) 0%, transparent 50%);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;

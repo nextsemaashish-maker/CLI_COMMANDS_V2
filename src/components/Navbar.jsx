@@ -79,10 +79,11 @@ export default function Navbar({
         justifyContent: 'space-between',
         gap: '8px',
         zIndex: 100,
-        background: 'rgba(5, 8, 14, 0.94)',
+        background: 'rgba(23, 24, 28, 0.95)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--border-color)',
+        borderBottom: '1px solid rgba(51, 65, 85, 0.5)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
         position: 'sticky',
         top: 0
       }}
@@ -97,9 +98,9 @@ export default function Navbar({
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span
               style={{
-                fontSize: '0.96rem',
-                fontWeight: 800,
-                letterSpacing: '-0.2px',
+                fontSize: '0.98rem',
+                fontWeight: 900,
+                letterSpacing: '-0.3px',
                 fontFamily: 'var(--font-display)',
                 color: '#ffffff',
                 whiteSpace: 'nowrap'
@@ -109,18 +110,18 @@ export default function Navbar({
             </span>
             <span
               style={{
-                fontSize: '0.58rem',
+                fontSize: '0.62rem',
                 fontFamily: 'var(--font-mono)',
                 fontWeight: 800,
-                color: 'var(--accent-green)',
-                background: 'rgba(16, 185, 129, 0.15)',
-                border: '1px solid var(--border-color)',
-                padding: '1px 5px',
+                color: '#04AA6D',
+                background: 'rgba(4, 170, 109, 0.18)',
+                border: '1px solid rgba(4, 170, 109, 0.4)',
+                padding: '1px 6px',
                 borderRadius: '4px',
                 whiteSpace: 'nowrap'
               }}
             >
-              v2.0 PRO
+              CLI v2.0
             </span>
           </div>
         </div>
